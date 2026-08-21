@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Shashank — Full Stack Portfolio"
+description = "A cinematic, interactive portfolio for Shashank, a full stack web developer, showcasing skills, capabilities, and professional certifications."
+version = "1.0.0"
+id = "artifacts/shashank-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22352
+
+[services.development]
+run = "pnpm --filter @workspace/shashank-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/shashank-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/shashank-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22352"
+BASE_PATH = "/"
