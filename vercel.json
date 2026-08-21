@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm --filter @workspace/shashank-portfolio run build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "artifacts/shashank-portfolio/dist/public",
+  "framework": "vite",
+  "cleanUrls": true,
+  "trailingSlash": false
+}
