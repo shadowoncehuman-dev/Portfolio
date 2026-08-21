@@ -76,8 +76,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid #d8ff65; outline-offs
 }
 .nav-link { position: relative; color: #91a2ae; transition: color .25s ease; }
 .nav-link:hover { color: #d8ff65; }
+.nav-link-active { color: #d8ff65; }
 .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -9px; height: 1px; background: #d8ff65; transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
-.nav-link:hover::after { transform: scaleX(1); }
+.nav-link:hover::after, .nav-link-active::after { transform: scaleX(1); }
+.scroll-progress { position: fixed; inset: 0 0 auto; z-index: 65; height: 2px; background: rgba(216,255,101,.12); pointer-events: none; }
+.scroll-progress span { display: block; height: 100%; width: 100%; transform-origin: left; background: #d8ff65; box-shadow: 0 0 16px rgba(216,255,101,.8); }
+.scroll-meter { position: fixed; right: 18px; bottom: 22px; z-index: 45; display: flex; align-items: center; gap: 8px; color: #6f7e8a; font: 400 9px var(--font-mono-custom); letter-spacing: .12em; pointer-events: none; }
+.scroll-meter i { display: block; width: 34px; height: 1px; background: linear-gradient(90deg, #d8ff65 0 45%, rgba(145,162,174,.3) 45%); }
 
 .hero-shell {
   position: relative;
@@ -197,6 +202,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #d8ff65; outline-offs
   .span-12 { grid-column: span 2; }
   .row-3 { min-height: 300px; }
   .section-block { padding-block: 80px; }
+  .scroll-meter { right: 14px; bottom: 14px; }
 }
 @media (max-width: 480px) {
   .hero-title { font-size: clamp(4rem, 20vw, 6rem); }

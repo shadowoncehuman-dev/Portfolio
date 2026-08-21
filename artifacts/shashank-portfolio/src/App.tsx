@@ -84,11 +84,28 @@ function Portfolio() {
   const [selectedCertificate, setSelectedCertificate] = useState<number | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('top');
+  const [scrollProgress, setScrollProgress] = useState(0);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setShowIntro(false), 1600);
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let frame = 0;
+    const sectionIds = ['top', 'about', 'capabilities', 'work', 'credentials', 'principles', 'contact'];
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        setScrollProgress(maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0);
+        setScrolled(window.scrollY > 24);
+        const current = sectionIds.reduce((visible, id) => {
+          const section = document.getElementById(id);
+          return section && section.getBoundingClientRect().top <= window.innerHeight * .38 ? id : visible;
+        }, 'top');
+        setActiveSection(current);
+        frame = 0;
+      });
+    };
     const onMove = (event: MouseEvent) => {
       if (cursorRef.current) {
         cursorRef.current.style.transform = `translate3d(${event.clientX - 3}px, ${event.clientY - 3}px, 0)`;
@@ -98,6 +115,7 @@ function Portfolio() {
     window.addEventListener('mousemove', onMove, { passive: true });
     return () => {
       window.clearTimeout(timer);
+      if (frame) window.cancelAnimationFrame(frame);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('mousemove', onMove);
     };
@@ -147,6 +165,8 @@ function Portfolio() {
       )}
 
       <div ref={cursorRef} className="pointer-events-none fixed left-0 top-0 z-[70] hidden size-2 rounded-full bg-[#d8ff65] mix-blend-screen lg:block" />
+      <div className="scroll-progress" aria-hidden="true"><span style={{ transform: `scaleX(${scrollProgress})` }} /></div>
+      <div className="scroll-meter" aria-hidden="true"><span>{Math.round(scrollProgress * 100).toString().padStart(2, '0')}</span><i /></div>
 
       <header className={`topbar fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'py-0' : 'bg-transparent border-transparent'}`}>
         <div className="section-shell flex h-[72px] items-center justify-between">
@@ -156,7 +176,7 @@ function Portfolio() {
           </button>
           <nav className="hidden items-center gap-7 md:flex" aria-label="Primary navigation">
             {[['about', '01 / About'], ['capabilities', '02 / Stack'], ['work', '03 / Work'], ['credentials', '04 / Proof'], ['contact', '05 / Contact']].map(([id, label]) => (
-              <a data-testid={`link-nav-${id}`} key={id} href={`#${id}`} className="nav-link font-mono-custom text-[9px] uppercase tracking-[.16em]">{label}</a>
+              <a data-testid={`link-nav-${id}`} key={id} href={`#${id}`} aria-current={activeSection === id ? 'page' : undefined} className={`nav-link font-mono-custom text-[9px] uppercase tracking-[.16em] ${activeSection === id ? 'nav-link-active' : ''}`}>{label}</a>
             ))}
             <a data-testid="link-telegram-header" href={telegramUrl} target="_blank" rel="noreferrer" className="ml-2 flex items-center gap-2 rounded-full border border-[#d8ff65]/55 px-3 py-2 font-mono-custom text-[9px] uppercase tracking-[.14em] text-[#d8ff65] transition hover:bg-[#d8ff65] hover:text-[#0b1017]"><Send size={12} /> Open channel</a>
           </nav>
